@@ -2,24 +2,35 @@
 require "nokogiri"
 require "open-uri"
 
-page = Nokogiri::HTML(open('http://annuaire-des-mairies.com/val-d-oise.html'))
 
-arr_city = page.xpath('//*[@id="voyance-par-telephone"]/table/tbody/tr[2]/td/table/tbody/tr/td[1]/p/a[6]')
+def scrapping_mairie
 
-print arr_city
+  page = Nokogiri::HTML(open('http://annuaire-des-mairies.com/val-d-oise.html'))
 
+  arr_cities = page.xpath('//tr/td/p/a/@href').map{ |c|  c.to_s.delete_prefix('./95/').delete_suffix(".html")}
 
-#<a class="lientxt" href="./95/asnieres-sur-oise.html">ASNIERES SUR OISE</a>
+  arr_sites = []
 
+  arr_cities.each do |city|
 
-=begin
-arr_cities.each do |city|
-  arr_sites << "http://annuaire-des-mairies.com/95/#{city}.html"
+    z = "http://annuaire-des-mairies.com/95/#{city}.html".to_s     
+ 
+    arr_sites << z
+
+  end
+
+  arr_emails = []
+
+  arr_sites.each do |site|
+
+    x = Nokogiri::HTML(open(site))
+
+    arr_emails << x.xpath("/html/body/div/main/section[2]/div/table/tbody/tr[4]/td[2]/text()").text
+
+  end
+
+  f = Hash[arr_cities.zip(arr_emails.map {|i| i})]
+
 end
-arr_sites.each do |site|
-  x = Nokogiri::HTML(open(site))
-  arr_emails << x.xpath("/html/body/div/main/section[2]/div/table/tbody/tr[4]/td[2]/text()")
-end
-print arr_cities
-print arr_emails
-=end
+
+print scrapping_mairie
