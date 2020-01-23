@@ -1,29 +1,27 @@
 require "nokogiri"
 require "open-uri"
 
+page = Nokogiri::HTML(open('https://coinmarketcap.com/all/views/all/'))
 
+def scrapping_data (page)
 
-def scrapping_data
-
-  page = Nokogiri::HTML(open('https://coinmarketcap.com/all/views/all/'))
-
-  arr_sym = page.xpath('//*[@id="__next"]/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr/td[@class="cmc-table__cell cmc-table__cell--sortable cmc-table__cell--left cmc-table__cell--sort-by__symbol"]/div[@class=""]/text()')
+    arr_sym = page.xpath('//*[@id="__next"]/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr/td[@class="cmc-table__cell cmc-table__cell--sortable cmc-table__cell--left cmc-table__cell--sort-by__symbol"]/div[@class=""]/text()')
    
-  arr_values = page.xpath('//*[@id="__next"]/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr/td[@class="cmc-table__cell cmc-table__cell--sortable cmc-table__cell--right cmc-table__cell--sort-by__price"]/a/text()')
+    symbol = []
   
-  symbol = []
-  
-  arr_sym.map do |sym|
+    arr_sym.map do |sym|
 
-    z = sym.to_s
+      z = sym.to_s
 
-    symbol << z
+      symbol << z
 
-  end
+    end
+   
+    arr_values = page.xpath('//*[@id="__next"]/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr/td[@class="cmc-table__cell cmc-table__cell--sortable cmc-table__cell--right cmc-table__cell--sort-by__price"]/a/text()')
+    
+    values = []
 
-  values = []
-
-  arr_values.each do |val|
+    arr_values.each do |val|
 
     w = val.to_s
 
@@ -31,13 +29,13 @@ def scrapping_data
 
     values << w
 
-  end
-
+    end
+    
   Hash[symbol.zip(values.map {|i| i})]
 
 end
 
-print scrapping_data
+print scrapping_data (page)
 
 
 
